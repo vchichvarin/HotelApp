@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">HotelInfo</string>
+    <string name="suits_search_text">Сортировать по кол-ву мест</string>
+    <string name="distance_search_text">Сортировать по удаленности от центра</string>
+    <string name="_6">6</string>
+    <string name="available_suits">Available suits:</string>
+    <string name="_100_0">100.0</string>
+    <string name="distance_to_center">Distance to center:</string>
+    <string name="_250_west_77th_street_manhattan">250 West 77th Street, Manhattan</string>
+    <string name="belleclaire_hotel">Belleclaire Hotel</string>
+    <string name="error_text">Нет подключения к сети. \nПроверьте подключение, чтобы загрузить информацию</string>
+    <string name="error_download_text">Не получилось загрузить данные. \nПопробуйте еще раз.</string>
+    <string name="reload">Загрузить заново</string>
+    <string name="error_card_single">Произошла ошибка загрузки. \nПопробуйте еще раз.</string>
+</resources>
