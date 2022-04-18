@@ -1,15 +1,15 @@
-package com.vchichvarin.hotelapp.ui.main
+package com.vchichvarin.hotelapp.presentation
 
 import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.vchichvarin.hotelapp.R
 import com.vchichvarin.hotelapp.databinding.MainActivityBinding
-import com.vchichvarin.hotelapp.helper.NetworkStateReceiver
-import com.vchichvarin.hotelapp.helper.NetworkStateReceiver.NetworkStateReceiverListener
+import com.vchichvarin.hotelapp.utility.NetworkStateReceiver
+import com.vchichvarin.hotelapp.utility.NetworkStateReceiver.NetworkStateReceiverListener
 
 
 class HotelListActivity : AppCompatActivity(), NetworkStateReceiverListener{
@@ -56,16 +56,16 @@ class HotelListActivity : AppCompatActivity(), NetworkStateReceiverListener{
     }
 
     override fun networkAvailable() {
-        binding.container.visibility = View.VISIBLE
-        binding.errorLayout.visibility = View.GONE
+        binding.container.isVisible = true
+        binding.errorLayout.isVisible = false
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, HotelListFragment.newInstance())
             .commitNow()
     }
 
     override fun networkUnavailable() {
-        binding.container.visibility = View.GONE
-        binding.errorLayout.visibility = View.VISIBLE
+        binding.container.isVisible = false
+        binding.errorLayout.isVisible = true
     }
 
 }

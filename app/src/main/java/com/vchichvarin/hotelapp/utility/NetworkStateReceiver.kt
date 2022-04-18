@@ -1,4 +1,4 @@
-package com.vchichvarin.hotelapp.helper
+package com.vchichvarin.hotelapp.utility
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,20 +16,16 @@ open class NetworkStateReceiver : BroadcastReceiver() {
         Log.i(TAG, "Intent broadcast received")
         if (intent == null || intent.extras == null) return
 
-        // Retrieve a ConnectivityManager for handling management of network connections
         val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        // Details about the currently active default data network. When connected, this network is the default route for outgoing connections
         val networkInfo = manager.activeNetworkInfo
-        /**
-         * NOTE: getActiveNetworkInfo() may return null when there is no default network e.g. Airplane Mode
-         */
+
         if (networkInfo != null && networkInfo.state == NetworkInfo.State.CONNECTED) {
             connected = true
         } else if (intent.getBooleanExtra(
                 ConnectivityManager.EXTRA_NO_CONNECTIVITY,
                 java.lang.Boolean.FALSE
             )
-        ) {    //Boolean that indicates whether there is a complete lack of connectivity
+        ) {
             connected = false
         }
         notifyStateToAll()
@@ -46,10 +42,8 @@ open class NetworkStateReceiver : BroadcastReceiver() {
     private fun notifyState(networkStateReceiverListener: NetworkStateReceiverListener?) {
         if (connected == null || networkStateReceiverListener == null) return
         if (connected == true) {
-            // Triggering function on the interface towards network availability
             networkStateReceiverListener.networkAvailable()
         } else {
-            // Triggering function on the interface towards network being unavailable
             networkStateReceiverListener.networkUnavailable()
         }
     }
@@ -69,12 +63,12 @@ open class NetworkStateReceiver : BroadcastReceiver() {
 
     interface NetworkStateReceiverListener {
         /**
-         * When the connection state is changed and there is a connection, this method is called
+         * Коллбэк для события включения сети
          */
         fun networkAvailable()
 
         /**
-         * Connection state is changed and there is not a connection, this method is called
+         * Коллбэк для события отключения сети
          */
         fun networkUnavailable()
     }

@@ -1,7 +1,7 @@
 package com.vchichvarin.hotelapp.di.modules
 
 import com.vchichvarin.hotelapp.BuildConfig
-import com.vchichvarin.hotelapp.data.api.HotelApi
+import com.vchichvarin.hotelapp.api.HotelApi
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient

@@ -1,16 +1,17 @@
-package com.vchichvarin.hotelapp.ui.main.adapter
+package com.vchichvarin.hotelapp.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.vchichvarin.hotelapp.data.model.CorrectedListHotel
+import com.vchichvarin.hotelapp.data.model.HotelsList
 import com.vchichvarin.hotelapp.databinding.CardHotelBinding
 
-class HotelListRecyclerViewAdapter (private var hotelsList: List<CorrectedListHotel>) :
-    RecyclerView.Adapter<HotelListRecyclerViewAdapter.HotelListViewHolder>() {
+class HotelListRecyclerViewAdapter (
+    private var hotelsList: List<HotelsList> = ArrayList()
+) : RecyclerView.Adapter<HotelListRecyclerViewAdapter.HotelListViewHolder>() {
 
-    var openDialog: ((list: CorrectedListHotel) -> Unit)? = null
+    var openDialog: ((list: HotelsList) -> Unit)? = null
 
     private lateinit var binding: CardHotelBinding
 
@@ -27,26 +28,26 @@ class HotelListRecyclerViewAdapter (private var hotelsList: List<CorrectedListHo
         return hotelsList.size
     }
 
-    fun updateList(new: List<CorrectedListHotel>) {
-        val hotelDiffUtil = HotelDiffUtil(hotelsList, new)
+    fun updateList(newHotelsList: List<HotelsList>) {
+        val hotelDiffUtil = HotelDiffUtil(hotelsList, newHotelsList)
         val diffResult = DiffUtil.calculateDiff(hotelDiffUtil)
-        hotelsList = new
+        hotelsList = newHotelsList
         diffResult.dispatchUpdatesTo(this)
     }
 
     class HotelListViewHolder(private val itemBinding: CardHotelBinding) :RecyclerView.ViewHolder(itemBinding.root) {
 
-        private lateinit var bottomSheetHotel: CorrectedListHotel
+        private lateinit var bottomSheet: HotelsList
 
         fun bind(
-            hotel: CorrectedListHotel,
-            openDialog: ((list: CorrectedListHotel) -> Unit)? = null
+            hotel: HotelsList,
+            openDialog: ((list: HotelsList) -> Unit)? = null
         ) {
-            bottomSheetHotel = hotel
-            itemBinding.name.text = hotel.singleHotel.name
-            itemBinding.rating.rating = hotel.singleHotel.stars
-            itemBinding.address.text = hotel.singleHotel.address
-            itemBinding.distance.text = hotel.singleHotel.distance.toString()
+            bottomSheet = hotel
+            itemBinding.name.text = hotel.singleServerHotels.name
+            itemBinding.rating.rating = hotel.singleServerHotels.stars
+            itemBinding.address.text = hotel.singleServerHotels.address
+            itemBinding.distance.text = hotel.singleServerHotels.distance.toString()
             itemBinding.suits.text = hotel.suitesList.size.toString()
             itemView.setOnClickListener {
                 openDialog?.invoke(hotel)
@@ -56,8 +57,8 @@ class HotelListRecyclerViewAdapter (private var hotelsList: List<CorrectedListHo
 
 
     class HotelDiffUtil(
-        private val oldList: List<CorrectedListHotel>,
-        private val newList: List<CorrectedListHotel>)
+        private val oldList: List<HotelsList>,
+        private val newList: List<HotelsList>)
         : DiffUtil.Callback () {
 
         override fun getOldListSize() = oldList.size
@@ -66,11 +67,11 @@ class HotelListRecyclerViewAdapter (private var hotelsList: List<CorrectedListHo
         override fun getNewListSize() = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldList[oldItemPosition].singleHotel.id == newList[newItemPosition].singleHotel.id
+            oldList[oldItemPosition].singleServerHotels.id == newList[newItemPosition].singleServerHotels.id
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldList[oldItemPosition].singleHotel.address == newList[newItemPosition].singleHotel.address &&
-            oldList[oldItemPosition].singleHotel.name == newList[newItemPosition].singleHotel.name &&
-            oldList[oldItemPosition].singleHotel.distance == newList[newItemPosition].singleHotel.distance
+            oldList[oldItemPosition].singleServerHotels.address == newList[newItemPosition].singleServerHotels.address &&
+            oldList[oldItemPosition].singleServerHotels.name == newList[newItemPosition].singleServerHotels.name &&
+            oldList[oldItemPosition].singleServerHotels.distance == newList[newItemPosition].singleServerHotels.distance
     }
 }

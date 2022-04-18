@@ -1,20 +1,20 @@
-package com.vchichvarin.hotelapp.ui.main
+package com.vchichvarin.hotelapp.presentation
 
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vchichvarin.hotelapp.App
 import com.vchichvarin.hotelapp.R
-import com.vchichvarin.hotelapp.data.model.CorrectedListHotel
 import com.vchichvarin.hotelapp.databinding.MainFragmentBinding
 import com.vchichvarin.hotelapp.di.factory.ViewModelFactory
-import com.vchichvarin.hotelapp.helper.State
-import com.vchichvarin.hotelapp.ui.main.adapter.HotelListRecyclerViewAdapter
-import com.vchichvarin.hotelapp.ui.main.bottomsheet.SingleHotelBottomSheetDialog
+import com.vchichvarin.hotelapp.presentation.adapter.HotelListRecyclerViewAdapter
+import com.vchichvarin.hotelapp.presentation.bottomsheet.SingleHotelBottomSheetDialog
+import com.vchichvarin.hotelapp.presentation.utility.subscribe
 import kotlinx.android.synthetic.main.main_fragment.view.*
 import javax.inject.Inject
 
@@ -32,8 +32,7 @@ class HotelListFragment : Fragment() {
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private var hotels = ArrayList<CorrectedListHotel>()
-    private var hotelAdapter = HotelListRecyclerViewAdapter(hotels)
+    private var hotelAdapter = HotelListRecyclerViewAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = MainFragmentBinding.inflate(inflater, container, false)
@@ -50,6 +49,14 @@ class HotelListFragment : Fragment() {
             adapter = hotelAdapter
         }
 
+        initDialogs(hotelAdapter)
+
+        initObservers()
+
+        return binding.root
+    }
+
+    private fun initDialogs(hotelAdapter: HotelListRecyclerViewAdapter) {
         hotelAdapter.openDialog = { list ->
             val bottomSheetDialog = SingleHotelBottomSheetDialog()
             val bundle = Bundle()
@@ -59,37 +66,24 @@ class HotelListFragment : Fragment() {
                 (context as FragmentActivity).supportFragmentManager, bottomSheetDialog.tag
             )
         }
+    }
 
-        viewModel.statusListHotels.observe(viewLifecycleOwner, {
-            when (it) {
-                is State.LOADING -> {
-                    binding.recycler.visibility = View.GONE
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.errorContainer.visibility = View.GONE
-                }
-                is State.ERROR -> {
-                    binding.recycler.visibility = View.GONE
-                    binding.progressBar.visibility = View.GONE
-                    binding.errorContainer.visibility = View.VISIBLE
-                }
-                is State.SuccessCorrectedListHotel -> {
-                    binding.recycler.visibility = View.VISIBLE
-                    binding.progressBar.visibility = View.GONE
-                    binding.errorContainer.visibility = View.GONE
-                    hotels = it.list
-                    hotelAdapter.updateList(hotels)
-                }
-            }
+    private fun initObservers() {
+        viewModel.loaderState.subscribe(viewLifecycleOwner, {
+            binding.progressBar.isVisible = it
         })
 
-        if (viewModel.correctedHotels.isNotEmpty()) {
-            hotels = viewModel.correctedHotels
-            hotelAdapter.updateList(hotels)
-            binding.recycler.scrollToPosition(0)
-        }
-        else getHotels()
+        viewModel.hotelsListState.subscribe(viewLifecycleOwner, {
+            hotelAdapter.updateList(it)
+        })
 
-        return binding.root
+        viewModel.errorContainerState.subscribe(viewLifecycleOwner, {
+            binding.errorContainer.isVisible = it
+        })
+
+        viewModel.recyclerViewState.subscribe(viewLifecycleOwner, {
+            binding.recycler.isVisible = it
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -100,32 +94,21 @@ class HotelListFragment : Fragment() {
             setTitle(R.string.app_name)
             setOnMenuItemClickListener { it ->
                 when (it.itemId) {
-                    R.id.suits_search -> {
-                        hotels.sortByDescending { it.suitesList.size }
-                        hotelAdapter.notifyDataSetChanged()
-                    }
-
-                    R.id.distance_search -> {
-                        hotels.sortByDescending { it.singleHotel.distance }
-                        hotelAdapter.notifyDataSetChanged()
-                    }
+                    R.id.suits_search -> { viewModel.sortHotelsListSuites() }
+                    R.id.distance_search -> { viewModel.sortHotelsListDistance() }
                 }
                 false
             }
         }
 
         binding.errorContainer.reload_button.setOnClickListener {
-            getHotels()
+            viewModel.getHotelsList()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.user_search, menu)
         super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    private fun getHotels() {
-        viewModel.getHotels()
     }
 
     override fun onDestroyView() {

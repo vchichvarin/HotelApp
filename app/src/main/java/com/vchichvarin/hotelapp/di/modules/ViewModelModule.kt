@@ -3,8 +3,8 @@ package com.vchichvarin.hotelapp.di.modules
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.vchichvarin.hotelapp.di.factory.ViewModelFactory
-import com.vchichvarin.hotelapp.ui.main.HotelListViewModel
-import com.vchichvarin.hotelapp.ui.main.bottomsheet.SingleHotelBottomSheetViewModel
+import com.vchichvarin.hotelapp.presentation.HotelListViewModel
+import com.vchichvarin.hotelapp.presentation.bottomsheet.SingleHotelBottomSheetViewModel
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module

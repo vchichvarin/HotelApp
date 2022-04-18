@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class SingleHotel(
+data class ServerSingleHotel(
     val id: Int,
     val name : String,
     val address: String,
@@ -19,7 +19,7 @@ data class SingleHotel(
 ) : Parcelable
 
 @Parcelize
-data class CorrectedSingleHotel (
-    val singleHotel: SingleHotel,
+data class SingleHotel (
+    val serverSingleHotel: ServerSingleHotel,
     val suitesList: List<Int>
 ) : Parcelable
